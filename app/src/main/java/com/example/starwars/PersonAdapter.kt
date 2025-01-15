@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.starwars.databinding.FragmentPersonDetailBinding
 import com.example.starwars.databinding.ItemPersonBinding
 import com.example.starwars.model.data.Person
 
