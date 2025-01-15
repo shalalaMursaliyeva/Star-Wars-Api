@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/peopleFragment">
+
+    <fragment
+        android:id="@+id/peopleFragment"
+        android:name="com.example.starwars.ui.people.PeopleFragment"
+        android:label="People"
+        tools:layout="@layout/fragment_people">
+        <action
+            android:id="@+id/action_peopleFragment_to_personDetailFragment"
+            app:destination="@id/personDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/personDetailFragment"
+        android:name="com.example.starwars.ui.personDetail.PersonDetailFragment"
+        android:label="Person Detail"
+        tools:layout="@layout/fragment_person_detail">
+        <argument
+            android:name="person"
+            app:argType="com.example.starwars.model.data.Person" />
+    </fragment>
+
+</navigation>
