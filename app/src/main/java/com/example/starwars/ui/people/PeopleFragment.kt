@@ -1,41 +1,81 @@
 package com.example.starwars.ui.people
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.starwars.PersonAdapter
-import com.example.starwars.R
+import com.example.starwars.databinding.FragmentPeopleBinding
+import com.example.starwars.model.data.Person
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PeopleFragment : Fragment() {
     private val viewModel: PeopleViewModel by viewModels()
+    private var _binding: FragmentPeopleBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var maleAdapter: PersonAdapter
+    private lateinit var femaleAdapter: PersonAdapter
+    private lateinit var naAdapter: PersonAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_people, container, false)
+    ): View {
+        _binding = FragmentPeopleBinding.inflate(inflater, container, false)
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        val adapter = PersonAdapter { person ->
+        maleAdapter = PersonAdapter { person ->
             val action = PeopleFragmentDirections.actionPeopleFragmentToPersonDetailFragment(person)
             findNavController().navigate(action)
         }
-        recyclerView.adapter = adapter
-
-        viewModel.people.observe(viewLifecycleOwner) { people ->
-            adapter.submitList(people)
+        femaleAdapter = PersonAdapter { person ->
+            val action = PeopleFragmentDirections.actionPeopleFragmentToPersonDetailFragment(person)
+            findNavController().navigate(action)
+        }
+        naAdapter = PersonAdapter { person ->
+            val action = PeopleFragmentDirections.actionPeopleFragmentToPersonDetailFragment(person)
+            findNavController().navigate(action)
         }
 
-        return view
+        binding.maleRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = maleAdapter
+        }
+
+        binding.femaleRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = femaleAdapter
+        }
+
+        binding.naRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = naAdapter
+        }
+
+        viewModel.people.observe(viewLifecycleOwner) { people ->
+            updateFilteredLists(people)
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+
+        return binding.root
+    }
+
+    private fun updateFilteredLists(people: List<Person>) {
+        maleAdapter.submitList(people.filter { it.gender == "male" })
+        femaleAdapter.submitList(people.filter { it.gender == "female" })
+        naAdapter.submitList(people.filter { it.gender == "n/a" })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -21,11 +21,15 @@ class PeopleViewModel @Inject constructor(
     private val _people = MutableLiveData<List<Person>>()
     val people: LiveData<List<Person>> get() = _people
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
     init {
         fetchPeople()
     }
 
     private fun fetchPeople() {
+        _isLoading.value = true
         viewModelScope.launch {
             try {
                 val response = getPeopleService.getPeople()
@@ -33,6 +37,8 @@ class PeopleViewModel @Inject constructor(
                 _people.value = results?.mapNotNull { it?.toPerson() }
             } catch (e: Exception) {
                 Log.e("PeopleViewModel", "Error fetching people: ${e.message}")
+            } finally {
+                _isLoading.value = false
             }
         }
     }
