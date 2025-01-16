@@ -1,4 +1,4 @@
-package com.example.starwars
+package com.example.starwars.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater

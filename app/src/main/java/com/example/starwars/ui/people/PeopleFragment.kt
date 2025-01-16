@@ -8,55 +8,53 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.starwars.PersonAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.example.starwars.adapter.PersonAdapter
 import com.example.starwars.databinding.FragmentPeopleBinding
 import com.example.starwars.model.data.Person
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PeopleFragment : Fragment() {
+
     private val viewModel: PeopleViewModel by viewModels()
     private var _binding: FragmentPeopleBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
-    private lateinit var maleAdapter: PersonAdapter
-    private lateinit var femaleAdapter: PersonAdapter
-    private lateinit var naAdapter: PersonAdapter
+    private val maleAdapter by lazy {
+        PersonAdapter { person -> navigateToPersonDetail(person) }
+    }
+    private val femaleAdapter by lazy {
+        PersonAdapter { person -> navigateToPersonDetail(person) }
+    }
+    private val naAdapter by lazy {
+        PersonAdapter { person -> navigateToPersonDetail(person) }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         _binding = FragmentPeopleBinding.inflate(inflater, container, false)
+        _binding?.let {
+            setupRecyclerViews(it)
+            observeViewModel(it)
+        }
+        return _binding?.root
+    }
 
-        maleAdapter = PersonAdapter { person ->
-            val action = PeopleFragmentDirections.actionPeopleFragmentToPersonDetailFragment(person)
-            findNavController().navigate(action)
-        }
-        femaleAdapter = PersonAdapter { person ->
-            val action = PeopleFragmentDirections.actionPeopleFragmentToPersonDetailFragment(person)
-            findNavController().navigate(action)
-        }
-        naAdapter = PersonAdapter { person ->
-            val action = PeopleFragmentDirections.actionPeopleFragmentToPersonDetailFragment(person)
-            findNavController().navigate(action)
-        }
+    private fun setupRecyclerViews(binding: FragmentPeopleBinding) {
+        binding.maleRecyclerView.setupAdapter(maleAdapter)
+        binding.femaleRecyclerView.setupAdapter(femaleAdapter)
+        binding.naRecyclerView.setupAdapter(naAdapter)
+    }
 
-        binding.maleRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = maleAdapter
-        }
+    private fun RecyclerView.setupAdapter(adapter: PersonAdapter) {
+        layoutManager = LinearLayoutManager(requireContext())
+        this.adapter = adapter
+    }
 
-        binding.femaleRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = femaleAdapter
-        }
-
-        binding.naRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = naAdapter
-        }
-
+    private fun observeViewModel(binding: FragmentPeopleBinding) {
         viewModel.people.observe(viewLifecycleOwner) { people ->
             updateFilteredLists(people)
         }
@@ -64,14 +62,17 @@ class PeopleFragment : Fragment() {
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
-
-        return binding.root
     }
 
     private fun updateFilteredLists(people: List<Person>) {
         maleAdapter.submitList(people.filter { it.gender == "male" })
         femaleAdapter.submitList(people.filter { it.gender == "female" })
         naAdapter.submitList(people.filter { it.gender == "n/a" })
+    }
+
+    private fun navigateToPersonDetail(person: Person) {
+        val action = PeopleFragmentDirections.actionPeopleFragmentToPersonDetailFragment(person)
+        findNavController().navigate(action)
     }
 
     override fun onDestroyView() {

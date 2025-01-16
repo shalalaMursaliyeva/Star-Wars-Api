@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Male"
+            android:text="@string/male"
             android:textSize="20sp" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Female"
+            android:text="@string/female"
             android:textSize="20sp" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="N/A"
+            android:text="@string/n_a"
             android:textSize="20sp" />
 
         <androidx.recyclerview.widget.RecyclerView
